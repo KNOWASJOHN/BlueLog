@@ -184,7 +184,7 @@ export function PDFViewer({
           </CardTitle>
           <div className="flex items-center gap-1.5">
             <Button asChild variant="ghost" size="sm" className="hover:scale-105">
-              <a href={src} target="_blank" rel="noreferrer">Open</a>
+              <a href="https://gamma.app/docs/SMART-INDIA-HACKATHON-2025-p7qbex77n2llt2y?mode=present#card-msjzir70fqyn3le" target="_self" rel="noreferrer">Open</a>
             </Button>
             <Button asChild variant="outline" size="sm" className="border-blue-200 dark:border-blue-900">
               <a href={src} download>Download</a>
