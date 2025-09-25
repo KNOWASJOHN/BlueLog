@@ -6,7 +6,7 @@ export default function UserPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-          <span className="bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent">📊</span>
+          <span className="bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent">👤</span>
           <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">User Portal</span>
         </h1>
         <p className="text-muted-foreground">Submit and track your carbon offset projects</p>
