@@ -1,8 +1,8 @@
 {
   "builds": [
     {
-      "src": "Dockerfile",
-      "use": "@vercel/docker"
+      "src": "package.json",
+      "use": "@vercel/next"
     }
   ]
 }
