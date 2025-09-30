@@ -16,6 +16,16 @@ export function PDFViewer({
   title = "Carbon Credit Documentation",
   src = "/SIH25038.pdf",
 }: PDFViewerProps) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
   // Dynamically import react-pdf and its CSS only on the client to avoid
   // server-side evaluation of DOM APIs (DOMMatrix) which causes runtime
   // errors when node tries to require pdfjs-dist.
@@ -62,32 +72,55 @@ export function PDFViewer({
     () =>
       variant === "full"
         ? "max-w-none w-full"
-        : "w-full max-w-7xl mx-auto",
+        : "w-full max-w-7xl mx-auto px-2 sm:px-4",
     [variant]
   )
 
-  const frameHeightClass = variant === "full" ? "h-[calc(100vh-4rem)] md:h-[calc(100vh-4rem)]" : "h-[32rem]"
+  const frameHeightClass = variant === "full" 
+    ? "h-[calc(100vh-4rem)] md:h-[calc(100vh-4rem)]" 
+    : "h-[24rem] sm:h-[32rem]"
+
+  // Initial scale based on screen size
+  useEffect(() => {
+    const setInitialScale = () => {
+      const width = window.innerWidth
+      if (width < 640) { // sm breakpoint
+        setScale(0.5)
+      } else if (width < 768) { // md breakpoint
+        setScale(0.7)
+      } else {
+        setScale(variant === "full" ? 1.0 : 0.8)
+      }
+    }
+    setInitialScale()
+    window.addEventListener('resize', setInitialScale)
+    return () => window.removeEventListener('resize', setInitialScale)
+  }, [variant])
 
   const Controls = (
     <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
-      <div className="pointer-events-auto z-30 flex items-center gap-2 rounded-full border border-border bg-background/90 px-2.5 py-1.5 shadow-md backdrop-blur supports-[backdrop-filter]:bg-background/70 opacity-0 group-hover:opacity-100 transition-opacity">
-        <span className="text-xs text-muted-foreground">{numPages} pages</span>
-        <div className="mx-1 h-5 w-px bg-border" />
+      <div className="pointer-events-auto z-30 flex flex-wrap justify-center items-center gap-2 rounded-full border border-border bg-background/90 px-2.5 py-1.5 shadow-md backdrop-blur supports-[backdrop-filter]:bg-background/70 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+        <span className="text-xs text-muted-foreground hidden sm:inline">{numPages} pages</span>
+        <div className="mx-1 h-5 w-px bg-border hidden sm:block" />
         {/* Zoom controls */}
-        <Button variant="ghost" size="sm" onClick={() => setScale((s) => Math.min(s + 0.1, 3))}>
-          <Plus className="size-4" />
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => setScale((s) => Math.max(s - 0.1, 0.5))}>
-          <Minus className="size-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={() => setScale((s) => Math.min(s + 0.1, 3))}>
+            <Plus className="size-4" />
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setScale((s) => Math.max(s - 0.1, 0.5))}>
+            <Minus className="size-4" />
+          </Button>
+        </div>
         <div className="mx-1 h-5 w-px bg-border" />
         {/* Rotation controls */}
-        <Button variant="ghost" size="sm" onClick={() => setRotation((r) => (r + 90) % 360)}>
-          <RotateCw className="size-4" />
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => setRotation((r) => (r + 270) % 360)}>
-          <RotateCcw className="size-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={() => setRotation((r) => (r + 90) % 360)}>
+            <RotateCw className="size-4" />
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setRotation((r) => (r + 270) % 360)}>
+            <RotateCcw className="size-4" />
+          </Button>
+        </div>
         <div className="mx-1 h-5 w-px bg-border" />
         <Button asChild variant="outline" size="sm" className="border-blue-200 dark:border-blue-900">
           <a href={src} download>
@@ -153,8 +186,8 @@ export function PDFViewer({
   return (
     <Card className={containerClasses}>
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between gap-3">
-          <CardTitle className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <CardTitle className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent text-lg sm:text-xl">
             {title}
           </CardTitle>
           <div className="flex items-center gap-1.5">
@@ -169,7 +202,7 @@ export function PDFViewer({
       </CardHeader>
       <CardContent>
         <div className={`w-full overflow-hidden rounded-lg bg-transparent`}>{pdfContent}</div>
-        <p className="text-sm text-muted-foreground mt-2 text-center">
+        <p className="text-xs sm:text-sm text-muted-foreground mt-2 text-center">
           Interactive PDF viewer - Learn about carbon credit processes and regulations
         </p>
       </CardContent>
