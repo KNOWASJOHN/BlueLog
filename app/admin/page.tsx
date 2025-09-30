@@ -7,24 +7,40 @@ import { useProjects } from "@/contexts/ProjectContext"
 import { useToast } from "@/hooks/use-toast"
 
 export default function AdminPage() {
-  const { projects, updateProject, getTotalCredits } = useProjects()
+  const { projects, updateProject, getTotalCredits, loading } = useProjects()
   const { toast } = useToast()
 
-  const handleVerify = (id: string) => {
-    updateProject(id, { status: "Verified", credits: 10 })
-    toast({
-      title: "Project Verified",
-      description: "Project has been verified and 10 credits awarded.",
-    })
+  const handleVerify = async (id: string) => {
+    try {
+      await updateProject(id, { status: "Verified", credits: 10 })
+      toast({
+        title: "Project Verified",
+        description: "Project has been verified and 10 credits awarded.",
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to verify project. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
-  const handleReject = (id: string) => {
-    updateProject(id, { status: "Rejected", credits: 0 })
-    toast({
-      title: "Project Rejected",
-      description: "Project has been rejected.",
-      variant: "destructive",
-    })
+  const handleReject = async (id: string) => {
+    try {
+      await updateProject(id, { status: "Rejected", credits: 0 })
+      toast({
+        title: "Project Rejected",
+        description: "Project has been rejected.",
+        variant: "destructive",
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to reject project. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
   const getStatusBadge = (status: string) => {
@@ -81,7 +97,15 @@ export default function AdminPage() {
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-blue-700 dark:text-blue-300">Project Reviews</h2>
 
-        {projects.length === 0 ? (
+        {loading ? (
+          <Card className="border-blue-100 dark:border-blue-900">
+            <CardContent className="pt-6">
+              <div className="text-center text-muted-foreground">
+                Loading projects...
+              </div>
+            </CardContent>
+          </Card>
+        ) : projects.length === 0 ? (
           <Card className="border-blue-100 dark:border-blue-900">
             <CardContent className="pt-6">
               <div className="text-center text-muted-foreground">

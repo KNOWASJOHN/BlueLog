@@ -14,7 +14,7 @@ type PDFViewerProps = {
 export function PDFViewer({
   variant = "full",
   title = "Carbon Credit Documentation",
-  src = "/BlueLog-1.pdf",
+  src = "/SIH25038.pdf",
 }: PDFViewerProps) {
   // Dynamically import react-pdf and its CSS only on the client to avoid
   // server-side evaluation of DOM APIs (DOMMatrix) which causes runtime
@@ -57,20 +57,6 @@ export function PDFViewer({
   const [numPages, setNumPages] = useState<number>(0)
   const [scale, setScale] = useState<number>(variant === "full" ? 1.5 : 1.0)
   const [rotation, setRotation] = useState<number>(0)
-  const [isPresenting, setIsPresenting] = useState<boolean>(false)
-
-  // Handle keyboard shortcuts
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'f' || e.key === 'F') {
-        document.documentElement.requestFullscreen()
-      } else if (e.key === 'Escape' && isPresenting) {
-        setIsPresenting(false)
-      }
-    }
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [isPresenting])
 
   const containerClasses = useMemo(
     () =>
@@ -103,17 +89,6 @@ export function PDFViewer({
           <RotateCcw className="size-4" />
         </Button>
         <div className="mx-1 h-5 w-px bg-border" />
-        {/* Presentation mode & Download */}
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => {
-            setIsPresenting(true)
-            document.documentElement.requestFullscreen()
-          }}
-        >
-          Present
-        </Button>
         <Button asChild variant="outline" size="sm" className="border-blue-200 dark:border-blue-900">
           <a href={src} download>
             <DownloadIcon className="size-4" />
@@ -184,7 +159,7 @@ export function PDFViewer({
           </CardTitle>
           <div className="flex items-center gap-1.5">
             <Button asChild variant="ghost" size="sm" className="hover:scale-105">
-              <a href="https://gamma.app/docs/SMART-INDIA-HACKATHON-2025-p7qbex77n2llt2y?mode=present#card-msjzir70fqyn3le" target="_self" rel="noreferrer">Open</a>
+              <a href={src} target="_blank" rel="noreferrer">Open</a>
             </Button>
             <Button asChild variant="outline" size="sm" className="border-blue-200 dark:border-blue-900">
               <a href={src} download>Download</a>

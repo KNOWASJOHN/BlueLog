@@ -1,6 +1,8 @@
 "use client"
 
-import { createContext, useContext, useState, type ReactNode } from "react"
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import { collection, addDoc, updateDoc, doc, onSnapshot, query } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 
 export interface Project {
   id: string
@@ -14,28 +16,45 @@ export interface Project {
 
 interface ProjectContextType {
   projects: Project[]
-  addProject: (project: Omit<Project, "id">) => void
-  updateProject: (id: string, updates: Partial<Project>) => void
+  addProject: (project: Omit<Project, "id">) => Promise<void>
+  updateProject: (id: string, updates: Partial<Project>) => Promise<void>
   getTotalCredits: () => number
+  loading: boolean
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined)
 
 export function ProjectProvider({ children }: { children: ReactNode }) {
   const [projects, setProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const addProject = (project: Omit<Project, "id">) => {
-    const newProject: Project = {
+  useEffect(() => {
+    const projectsQuery = query(collection(db, 'projects'))
+    
+    const unsubscribe = onSnapshot(projectsQuery, (snapshot) => {
+      const projectsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Project[]
+      setProjects(projectsData)
+      setLoading(false)
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  const addProject = async (project: Omit<Project, "id">) => {
+    const newProject = {
       ...project,
-      id: Date.now().toString(),
       status: "Pending",
       credits: 0,
     }
-    setProjects((prev) => [...prev, newProject])
+    await addDoc(collection(db, 'projects'), newProject)
   }
 
-  const updateProject = (id: string, updates: Partial<Project>) => {
-    setProjects((prev) => prev.map((project) => (project.id === id ? { ...project, ...updates } : project)))
+  const updateProject = async (id: string, updates: Partial<Project>) => {
+    const projectRef = doc(db, 'projects', id)
+    await updateDoc(projectRef, updates)
   }
 
   const getTotalCredits = () => {
@@ -51,6 +70,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         addProject,
         updateProject,
         getTotalCredits,
+        loading
       }}
     >
       {children}

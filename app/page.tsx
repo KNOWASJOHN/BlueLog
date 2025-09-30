@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import dynamic from "next/dynamic"
 const PDFViewer = dynamic(() => import("@/components/PDFViewer").then(m => m.PDFViewer), { ssr: false })
-
 export default function HomePage() {
+
   const features = [
     {
       title: "User Submission",
