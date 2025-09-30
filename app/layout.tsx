@@ -5,7 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { ProjectProvider } from "@/contexts/ProjectContext"
-import { ThemeProvider } from "@/contexts/ThemeContext"
+import { ThemeProvider } from "@/components/theme-provider"
 import { Navigation } from "@/components/Navigation"
 import { Suspense } from "react"
 
